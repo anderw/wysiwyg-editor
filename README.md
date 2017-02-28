@@ -1,1 +1,1 @@
-# wysiwyg-editodkdr
+# wysiwyg-editor

@@ -9,7 +9,7 @@
     "admin",
     "site"
   ],
-  "author": "赵鹏超",
+  "author": "anderw",
   "license": "MIT",
   "dependencies": {
     "antd": "^2.9.1",

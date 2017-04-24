@@ -1,0 +1,53 @@
+{
+  "name": "wysiwyg-editor",
+  "version": "0.0.1",
+  "description": "react wysiwyg editor based draftjs",
+  "scripts": {
+    "start": "babel-node bin/start.dev"
+  },
+  "keywords": [
+    "admin",
+    "site"
+  ],
+  "author": "赵鹏超",
+  "license": "MIT",
+  "dependencies": {
+    "antd": "^2.9.1",
+    "classnames": "^2.2.5",
+    "draft-js": "^0.9.1",
+    "immutable": "^3.8.1",
+    "rc-color-picker": "^1.1.3",
+    "rc-trigger": "^1.8.1",
+    "react": "^15.2.0",
+    "react-color": "^2.11.1",
+    "react-dom": "^15.3.2"
+  },
+  "devDependencies": {
+    "babel-core": "^6.18.2",
+    "babel-loader": "^6.2.4",
+    "babel-plugin-transform-runtime": "^6.9.0",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-react": "^6.11.1",
+    "babel-preset-stage-0": "^6.5.0",
+    "chalk": "^1.1.3",
+    "css-loader": "^0.23.1",
+    "dotenv": "^2.0.0",
+    "extract-text-webpack-plugin": "^1.0.1",
+    "file-loader": "^0.9.0",
+    "html-loader": "^0.4.3",
+    "html-webpack-plugin": "^2.22.0",
+    "keymirror": "^0.1.1",
+    "less-loader": "^2.2.3",
+    "node-sass": "^3.8.0",
+    "sass-loader": "^4.0.0",
+    "shelljs": "^0.7.0",
+    "style-loader": "^0.13.1",
+    "url-loader": "^0.5.7",
+    "webpack": "^1.13.1",
+    "webpack-dev-middleware": "^1.6.1",
+    "webpack-dev-server": "^1.14.1",
+    "webpack-hot-middleware": "^2.12.1",
+    "webpack-merge": "^0.14.0",
+    "yargs": "^4.8.0"
+  }
+}

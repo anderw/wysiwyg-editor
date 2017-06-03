@@ -8,6 +8,13 @@ export function setBlockData(editorState,data) {
     return EditorState.push(editorState, newContentState, 'change-block-data')
 }
 
+export function isList(blockType) {
+  return (
+    blockType === 'unordered-list-item' ||
+    blockType === 'ordered-list-item'
+  )
+}
+
 export function getSelectedBlocksMap (editorState) {
   const selectionState = editorState.getSelection()
   const contentState = editorState.getCurrentContent()

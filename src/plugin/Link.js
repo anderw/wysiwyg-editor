@@ -10,17 +10,17 @@ import { Modal, message } from 'antd'
 import { getSelectionText, getSelectionEntity } from '../utils/BlockUtil'
 import LinkFrom from '../component/LinkForm'
 function findLinkEntities(contentBlock, callback, contentState) {
-  console.log(contentState)
+  console.log(callback)
   contentBlock.findEntityRanges(
     (character) => {
       const entityKey = character.getEntity();
       return (
         entityKey !== null &&
-        Entity.get(entityKey).getType() === 'LINK'
+        contentState.getEntity(entityKey).getType() === 'LINK'
       );
     },
     callback
-  );
+  )
 }
 function noop() {}
 export default { 
@@ -56,7 +56,7 @@ export default {
                   let { link } = values
                   let entityKey = null
                   if(link) {
-                      entityKey = Entity.create('LINK', 'MUTABLE', {url: link});
+                      entityKey = editorState.getCurrentContent().createEntity('LINK', 'MUTABLE', {url: link});
                   }
                   const netEditorState = RichUtils.toggleLink(
                       editorState,

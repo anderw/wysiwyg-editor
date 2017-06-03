@@ -155,3 +155,10 @@ button:active {
   border:1px solid #ccc;
   background-size: 100% 100%;
 }
+
+.imagePreview img {
+  max-width: 100%;
+}
+.mr_5 {
+  margin-left:5px;
+}

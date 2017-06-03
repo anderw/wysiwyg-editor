@@ -29,9 +29,9 @@ class Link extends Component {
   }
 
   render() {
-    const { children, entityKey, contentState } = this.props;
-    console.log(this.props)
-    const { url, title } = Entity.get(entityKey).getData();
+    const { contentState, block } = this.props
+    const entity = contentState.getEntity(block.getEntityAt(0))
+    const { url, title } = entity.getData();
     const { showPopOver } = this.state;
     return (
       <span

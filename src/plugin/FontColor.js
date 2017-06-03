@@ -18,15 +18,16 @@ export default {
         setEditorState: noop,
       }
        function customStyleFn(styleSet) {
-        return styleSet.map(style => {
+         let rs = {}
+         styleSet.forEach(style => {
             if (style.indexOf(PREFIX) !== -1) {
             const color = '#' + style.substring(PREFIX.length);
-                return {
-                    color,
+                rs = {
+                    color
                 }
             }
-            return {};
-        }).reduce(Object.assign);
+        })
+        return rs
       }
       const applyFontColor = togglePrefixStyle(PREFIX, callbacks)
       function colorChange (color, e) {
@@ -43,11 +44,10 @@ export default {
           const editorState = callbacks.getEditorState()
           const selection = editorState.getSelection()
           const currentStyle = editorState.getCurrentInlineStyle()
-          const currentFontColor = currentStyle.find( item =>{
-              return item.indexOf(`${PREFIX}`) !== -1
-          })
-          const fontColor = currentFontColor ? currentFontColor.substring(PREFIX.length) : defaultFontColor
-          console.log('tool bars ...' + fontColor)
+          // const currentFontColor = currentStyle.find( item =>{
+          //     return item.indexOf(`${PREFIX}`) !== -1
+          // })
+          // const fontColor = currentFontColor ? currentFontColor.substring(PREFIX.length) : defaultFontColor
           let btns = ['ed5565','da4453', 'fc6e51', 'e9573f', 'ffce54', 'f6bb42', 'a0d468', 'bcc152', '48cfad', '37bc9b', '4fc1e9', '38afda', '5d9cec', '4a89dc', 'ac92ec', '967adc', 'ccd1d9', 'aab2bd', '656d78', '434a54', '000000'].map((val) => {
             return (<Tag color={'#' + val} onClick={() => { applyFontColor(`${PREFIX}${val}` )}} className={'color-btn'} />)
           })

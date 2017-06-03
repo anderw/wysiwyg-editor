@@ -3,10 +3,11 @@ import {Image} from '../utils/Button'
 import { Modal, message } from 'antd'
 import ImageSelectView from '../component/ImageSelectView'
 import {execlusiveStyleFn} from '../utils/InlineUtil'
-
+import { Entity, RichUtils, AtomicBlockUtils } from 'draft-js'
+import ImageInline from '../component/ImageInline'
 
 function noop() {}
-export default { 
+export default {
     constructor () {
       const callbacks = {
         getEditorState: noop,
@@ -16,6 +17,22 @@ export default {
       return {
         name: 'image',
         callbacks,
+        blockRendererFn : (block) => {
+          const editorState = callbacks.getEditorState()
+          if (block.getType() === 'atomic') {
+            const entity = editorState.getCurrentContent().getEntity(block.getEntityAt(0))
+            if (entity && entity.type === 'IMAGE') {
+              return {
+                component: ImageInline,
+                editable: false,
+                props: {
+                  callbacks
+                }
+              }
+            }
+            return undefined
+          }
+        },
         component: (props) => {
           const editorState = callbacks.getEditorState()
           const currentStyle = editorState.getCurrentInlineStyle()
@@ -31,7 +48,15 @@ export default {
 
           function insertImage () {
               imgShow=false
-              callbacks.setEditorState(editorState)
+              let info = imgView.refs.wrappedComponent.refs.formWrappedComponent.getImageInfo()
+              imgView.refs.wrappedComponent.refs.formWrappedComponent.clearImage()
+              let entityKey = editorState.getCurrentContent().createEntity('IMAGE', 'IMMUTABLE', info).getLastCreatedEntityKey()
+              let newEditorState = AtomicBlockUtils.insertAtomicBlock(
+                  editorState,
+                  entityKey,
+                  ' '
+              )
+              callbacks.setEditorState(newEditorState)
           }
           let imgView = null
           // return (<Image onClick={showModal} />)

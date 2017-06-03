@@ -5,30 +5,33 @@ export function togglePrefixStyle (prefix, callbacks){
     return function (styleName) {
         const { getEditorState, setEditorState } = callbacks
         let editorState = getEditorState()
+        // const selection = editorState.getSelection()
         let contentState = editorState.getCurrentContent()
         const selection = editorState.getSelection()
-        let currentStyle = editorState.getCurrentInlineStyle()
-        currentStyle.forEach( style => {
+        const startBlock = contentState.getBlockForKey(selection.getStartKey())
+        let inlineStyle = startBlock.getInlineStyleAt(selection.getStartOffset())
+        let nextContent = inlineStyle.reduce((content, style) => {
             if (style.indexOf(`${prefix}`) !== -1) {
-                currentStyle = currentStyle.remove(style)
+               return Modifier.removeInlineStyle(content, selection, style)
+            } else {
+                return content
             }
-        })
+        }, contentState)
+        console.log(nextContent)
+        nextContent = Modifier.applyInlineStyle(nextContent, selection, styleName)
         let nextEditorState = EditorState.push(
             editorState,
-            contentState,
+            nextContent,
             'change-inline-style'
         )
-        let changeStyle = nextEditorState.getCurrentInlineStyle()
+        
         if (selection.isCollapsed()) {
-            nextEditorState = EditorState.setInlineStyleOverride(nextEditorState, currentStyle.has(styleName) ? currentStyle.remove(styleName) : currentStyle.add(styleName))
+            inlineStyle = inlineStyle.add(styleName)
+            nextEditorState = EditorState.setInlineStyleOverride(nextEditorState, inlineStyle)
         }
-        changeStyle = nextEditorState.getCurrentInlineStyle()
-        if (!changeStyle.has(styleName)) {
-            nextEditorState = RichUtils.toggleInlineStyle(
-            nextEditorState,
-            styleName
-            )
-        }
+        // changeStyle = nextEditorState.getCurrentInlineStyle()
+        // if (!inlineStyle.has(styleName)) {
+        // }
         setEditorState(nextEditorState)
     }
 }

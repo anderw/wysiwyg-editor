@@ -6,6 +6,7 @@ import {
     RichUtils,
     CompositeDecorator
 } from 'draft-js'
+import { convertToHTML, convertFromHTML } from 'draft-convert'
 import 'antd/dist/antd.css'
 import 'draft-js/dist/Draft.css'
 import 'assets/css/index.css'
@@ -13,10 +14,14 @@ import 'assets/css/dropdown.css'
 import 'assets/css/editor-ext.css'
 import { List, Map } from 'immutable'
 import Store from './store'
+console.log(convertToHTML)
 const MAX_DEEPTH = 5
 import defaultPlugins from './defualtPlugin'
+import CreateConvertHtml from 'utils/ConvertTohtml'
 
 // const store = new Store()
+
+// const convertHtml = CreateConvertHtml()
 
 class WysiwygEditor extends Component {
     
@@ -34,8 +39,15 @@ class WysiwygEditor extends Component {
         this.plugins = this.initPlugin()
         this.initCustomStyleMap()
         this.initBlockStyleFn()
+        this.initBlockRenderFn()
         this.getDecorator()
+        this.initConvert()
+        
         this.store.set('customStyleFn', this.customStyleFn.bind(this))
+        this.convertHtml = CreateConvertHtml({
+            customStyleFn: this.customStyleFn.bind(this),
+            customStyleMap: this.store.get('customStyleMap')
+        })
     }
 
     initPlugin () {
@@ -69,10 +81,21 @@ class WysiwygEditor extends Component {
                 let rs = func(block)
                 return state.concat([rs])
             }, [])
-        return styles.filter((s) => (s.length > 0 )).join(' ') 
+            return styles.filter((s) => (s.length > 0 )).join(' ') 
         })
     }
 
+    blockRendererFn (contentBlock) {
+        const blocksRender = this.store.get('blockRendererFn')
+        let blkRender = null
+        blocksRender.forEach((bf) => {
+            const cl = bf(contentBlock)
+            if (cl) {
+                blkRender = cl
+            }
+        })
+        return blkRender
+    }
     initBlockStyleFn () {
         let blocksStyleFn = []
         this.plugins.forEach((plugin) => {
@@ -82,6 +105,17 @@ class WysiwygEditor extends Component {
             }
         })
         this.store.set('blockStyleFn', blocksStyleFn)
+    }
+
+    initBlockRenderFn () {
+        let blksRendererFn =  []
+        this.plugins.forEach(plugin => {
+            let { blockRendererFn } = plugin
+            if (blockRendererFn) {
+                blksRendererFn.push(blockRendererFn)
+            }
+        })
+        this.store.set('blockRendererFn', blksRendererFn)
     }
 
     initCustomStyleMap() {
@@ -118,6 +152,23 @@ class WysiwygEditor extends Component {
         let editorState = this.createEditorState(new CompositeDecorator(this.store.get('decorators')))
 
     }
+
+    initConvert () {
+        this.convertStateToHtml = convertToHTML({
+            styleToHTML : (style) => {
+                console.log(this.store.get('customStyleMap'))
+                if (style.indexOf('FONTCOLOR_')  !== -1) {
+                    const color = '#' + style.substring('FONTCOLOR_'.length)
+                    return <span style={{color}}/>
+                } else if (style.indexOf('BGCOLOR_')  !== -1) {
+                    const backgroundColor = '#' + style.substring('BGCOLOR_'.length)
+                    return <span style={{backgroundColor}}/>
+                }
+                
+            }
+        })
+
+    }
     
     createEditorState (compositeDecorator) {
         let editorState = null
@@ -145,11 +196,21 @@ class WysiwygEditor extends Component {
     }
 
     setEditorState (editorState,focus){
+        const { editorChange } = this.props
         this.setState({editorState},() => {
             if(focus){
                 this.editorFocus()
             }
+            if (editorChange) {
+                editorChange()
+            }
         })
+    }
+
+    getEditorHtml () {
+        // let html = this.convertStateToHtml(this.state.editorState.getCurrentContent())
+        this.convertHtml(this.state.editorState.getCurrentContent(), this.state.editorState)
+        // return html    
     }
 
     refreshToolbar () {
@@ -172,6 +233,7 @@ class WysiwygEditor extends Component {
                     onTab={this._onTab.bind(this)}
                     customStyleMap={this.store.get('customStyleMap')}
                     blockStyleFn={this.getBlockStyleFn()}
+                    blockRendererFn={this.blockRendererFn.bind(this)}
                     customStyleFn={this.customStyleFn.bind(this)}
                     ref={(editor) => { this.editor = editor }}
             />

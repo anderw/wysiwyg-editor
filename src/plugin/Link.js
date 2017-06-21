@@ -13,10 +13,14 @@ function findLinkEntities(contentBlock, callback, contentState) {
   console.log(callback)
   contentBlock.findEntityRanges(
     (character) => {
+      console.log(character)
       const entityKey = character.getEntity();
+      if (entityKey === null) {
+        return false;
+      }
       return (
         entityKey !== null &&
-        contentState.getEntity(entityKey).getType() === 'LINK'
+        entityKey.getEntity(0).getType() === 'LINK'
       );
     },
     callback

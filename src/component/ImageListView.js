@@ -12,4 +12,4 @@ class ImageListview extends Component {
     }
 }
 
-export default ImageListview;
+export default ImageListview

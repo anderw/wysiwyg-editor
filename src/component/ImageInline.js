@@ -17,7 +17,6 @@ class ImageInline extends Component {
         const { contentState, block } = this.props
         const entity = contentState.getEntity(block.getEntityAt(0))
         const { src, alignment, width, height } = entity.getData()
-        console.log('cc')
         return (
             <span className={classNames(
                 'image-alignment',

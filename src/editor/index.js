@@ -181,6 +181,16 @@ class WysiwygEditor extends Component {
 
     _onTab(event) {
         let {editorState} = this.state
+        var selection = editorState.getSelection()
+	    var key = selection.getAnchorKey()
+	    if (key !== selection.getFocusKey()) {
+	        return false
+	    }
+	    var content = editorState.getCurrentContent()
+	    var block = content.getBlockForKey(key)
+        if (block.getDepth() + 1 === MAX_DEEPTH && !event.shiftKey) {
+            return false
+        }
         let newEditorState = RichUtils.onTab(event, editorState, MAX_DEEPTH)
         if (newEditorState !== editorState) {
             this.setEditorState(newEditorState)
@@ -208,9 +218,7 @@ class WysiwygEditor extends Component {
     }
 
     getEditorHtml () {
-        // let html = this.convertStateToHtml(this.state.editorState.getCurrentContent())
-        this.convertHtml(this.state.editorState.getCurrentContent(), this.state.editorState)
-        // return html    
+        return this.convertHtml(this.state.editorState.getCurrentContent(), this.state.editorState)    
     }
 
     refreshToolbar () {
